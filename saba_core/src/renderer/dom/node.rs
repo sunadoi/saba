@@ -5,6 +5,8 @@ use alloc::rc::Weak;
 use alloc::string::String;
 use alloc::vec::Vec;
 use core::cell::RefCell;
+use core::fmt::Display;
+use core::fmt::Formatter;
 use core::str::FromStr;
 
 #[derive(Debug, Clone)]
@@ -165,6 +167,17 @@ impl Element {
   pub fn kind(&self) -> ElementKind {
     self.kind
   }
+
+  pub fn attributes(&self) -> Vec<Attribute> {
+    self.attributes.clone()
+  }
+
+  pub fn is_block_element(&self) -> bool {
+    match self.kind {
+      ElementKind::Body | ElementKind::H1 | ElementKind::H2 | ElementKind::P => true,
+      _ => false,
+    }
+  }
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -205,5 +218,22 @@ impl FromStr for ElementKind {
       "a" => Ok(ElementKind::A),
       _ => Err(format!("unimplemented element name {:?}", s)),
     }
+  }
+}
+
+impl Display for ElementKind {
+  fn fmt(&self, f: &mut Formatter) -> core::fmt::Result {
+    let s = match self {
+      ElementKind::Html => "html",
+      ElementKind::Head => "head",
+      ElementKind::Style => "style",
+      ElementKind::Script => "script",
+      ElementKind::Body => "body",
+      ElementKind::H1 => "h1",
+      ElementKind::H2 => "h2",
+      ElementKind::P => "p",
+      ElementKind::A => "a",
+    };
+    write!(f, "{}", s)
   }
 }
